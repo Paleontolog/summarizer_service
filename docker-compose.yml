@@ -1,0 +1,68 @@
+version: '3'
+services:
+  binary_classifier:
+    build: ./server
+    container_name: backend-binary-classifier
+    restart: always
+    ports:
+      - "8081:5000"
+    environment:
+      - DEVICE=cpu
+      - MODEL_NAME=/home/backend/bert_model
+      - BACKEND_TYPE=binary_classifier
+      - BATCH_SIZE=32
+
+
+      - FLASK_APP=wsgi.py
+      - FLASK_ENV=production
+    volumes:
+      - ./bert_model:/home/backend/bert_model
+    command: gunicorn --bind 0.0.0.0:5000 wsgi:app
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: [gpu]
+
+
+  bart_summarizer:
+    build: ./server
+    container_name: backend-bart-summarizer
+    restart: always
+    ports:
+      - "8082:5000"
+    environment:
+      - DEVICE=cuda
+      - MODEL_NAME=/home/backend/bart_model
+      - BACKEND_TYPE=bart
+
+      - FLASK_APP=wsgi.py
+      - FLASK_ENV=production
+    volumes:
+      - ./bart_model:/home/backend/bart_model
+    command: gunicorn --bind 0.0.0.0:5000 wsgi:app
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: [gpu]
+
+  flask:
+    build:
+      context: ./gui
+      dockerfile: Dockerfile
+    container_name: backend-gui
+    environment:
+      - FLASK_APP=wsgi.py
+      - FLASK_ENV=production
+
+      - BINARY_CLASSIFIER=http://binary_classifier:5000/
+      - SUMMARIZER=http://bart_summarizer:5000/
+    restart: always
+    ports:
+      - "8080:5000"
+    command: gunicorn --bind 0.0.0.0:5000 wsgi:app
+    depends_on:
+      - binary_classifier
+      - bart_summarizer
+

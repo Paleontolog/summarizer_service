@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Summarize text</title>
+    <link href="../static/css/bootstrap/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .bd-placeholder-img {
+            font-size: 1.125rem;
+            text-anchor: middle;
+              -webkit-user-select: none;
+              -moz-user-select: none;
+              user-select: none;
+        }
+
+          @media (min-width: 768px) {
+              .bd-placeholder-img-lg {
+                  font-size: 3.5rem;
+              }
+          }
+    </style>
+</head>
+<body class="bg-light">
+    <div class="container" style="max-width: 960px;">
+        <main>
+            <div class="py-5 text-center">
+                <h2>Summarize text </h2>
+                <p class="lead">Select the desired method and fill in the required parameters</p>
+            </div>
+
+            <form class="needs-validation" id="form_summarize" novalidate>
+                <div class="row g-5">
+                    <div class="col-md-5 col-lg-4 order-md-last">
+                        <h4 class="d-flex justify-content-between align-items-center mb-3">
+                            <span class="text-primary">Method parameters</span>
+                        </h4>
+                        <ul class="list-group mb-3">
+                            <li class="list-group-item justify-content-between lh-sm" id="max_length__li">
+                                <label for="max_length" class="form-label fw-bold">Max Length</label>
+                                <div class="has-validation">
+                                    <input type="number" class="form-control" id="max_length" min="1" placeholder="160" required>
+                                    <small class="text-muted">Enter max length</small>
+                                    <div class="invalid-feedback">
+                                      Field is required.
+                                    </div>
+                                </div>
+                            </li>
+
+                            <li class="list-group-item justify-content-between lh-sm" id="no_repeat_ngram_size__li">
+                                <label for="no_repeat_ngram_size" class="form-label fw-bold">No Repeat Ngram Size</label>
+                                <div class="has-validation">
+                                    <input type="number" class="form-control" id="no_repeat_ngram_size" min="1" placeholder="3" required>
+                                    <small class="text-muted">Enter ngram size</small>
+                                    <div class="invalid-feedback">
+                                        Field is required.
+                                    </div>
+                                </div>
+                            </li>
+
+                            <li class="list-group-item justify-content-between lh-sm" id="num_beams__li">
+                                <label for="num_beams" class="form-label fw-bold">Num Beams</label>
+                                <div class="has-validation">
+                                    <input type="number" class="form-control" id="num_beams" min="1" placeholder="5" required>
+                                    <small class="text-muted">Enter num beams</small>
+                                    <div class="invalid-feedback">
+                                        Field is required.
+                                    </div>
+                                </div>
+                            </li>
+
+                            <li class="list-group-item justify-content-between lh-sm" id="repetition_penalty__li">
+                                <label for="repetition_penalty" class="form-label fw-bold">Repetition Penalty</label>
+                                <div class="has-validation">
+                                    <input type="number" class="form-control" id="repetition_penalty" min="0.1" step="any" placeholder="2.5" required>
+                                    <small class="text-muted">Enter repetition penalty</small>
+                                    <div class="invalid-feedback">
+                                        Field is required.
+                                    </div>
+                                </div>
+                            </li>
+
+                            <li class="list-group-item justify-content-between lh-sm" id="temperature__li">
+                                <label for="temperature" class="form-label fw-bold">Temperature</label>
+                                <div class="has-validation">
+                                    <input type="number" class="form-control" id="temperature" min="0.1" step="any" placeholder="0.8" required>
+                                    <small class="text-muted">Enter temperature</small>
+                                    <div class="invalid-feedback">
+                                        Field is required.
+                                    </div>
+                                </div>
+                            </li>
+
+                            <li class="list-group-item justify-content-between lh-sm" id="top_k__li">
+                                <label for="top_k" class="form-label fw-bold">Top K</label>
+                                <div class="has-validation">
+                                    <input type="number" class="form-control" id="top_k" min="1" placeholder="5" required>
+                                    <small class="text-muted">Enter top k</small>
+                                    <div class="invalid-feedback">
+                                        Field is required.
+                                    </div>
+                                </div>
+                            </li>
+
+                            <li class="list-group-item justify-content-between lh-sm" id="top_p__li">
+                                <label for="top_p" class="form-label fw-bold">Top P</label>
+                                <div class="has-validation">
+                                    <input type="number" class="form-control" id="top_p" min="0.1" step="any" placeholder="0.8" required>
+                                    <small class="text-muted">Enter top p</small>
+                                    <div class="invalid-feedback">
+                                        Field is required.
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                  </div>
+                  <div class="col-md-7 col-lg-8">
+                      <h4 class="mb-3">Summarize text </h4>
+                      <div class="row g-3">
+                          <div class="col-12">
+                              <label for="choose_method" class="form-label">Choose method </label>
+                              <select class="form-select" id="choose_method" required>
+                                  <option id="none_method" value="">Select...</option>
+                                  <option id="bart_and_bert">BART + BERT</option>
+                                  <option id="bart">BART</option>
+                                  <option id="bert">BERT</option>
+                                </select>
+                              <div class="invalid-feedback">
+                                  Please select method.
+                              </div>
+                          </div>
+
+                          <div class="col-12">
+                              <label for="input_text" class="form-label">Text</label>
+                              <small class="text-muted d-block d-none" id="text_muted_bart">For BART, only the first 1000 characters will be processed</small>
+                              <textarea class="form-control" id="input_text" placeholder="Текст" rows="20" required></textarea>
+                              <span class="d-flex justify-content-end" id="count_text"></span>
+                              <br>
+                              <div class="invalid-feedback">
+                                  Please enter text.
+                              </div>
+                          </div>
+                      </div>
+                      <input type="button" class="w-100 btn btn-primary btn-lg" id="button_summarize" value="Get the result">
+                      <button type="button" class="w-100 btn btn-primary btn-lg d-none" id="button_summarize_loading" disabled>
+                          <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                          <span class="sr-only">Get the result...</span>
+                      </button>
+                      <div class="alert-danger" id="result_error__text"></div>
+                  </div>
+              </div>
+            </form>
+            <div class="row g-5" id="result_field__div">
+                <div class="col-md-7 col-lg-8">
+                    <h4 class="mb-3">Result</h4>
+                    <div class="justify-content-between lh-sm bg-white border" id="result_field__value"></div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="my-5 pt-5 text-muted text-center text-small">
+            <p class="mb-1">&copy; 2021 Artem Lezgyan</p>
+        </footer>
+    </div>
+</body>
+
+<script src="../static/js/bootstrap/bootstrap.min.js"></script>
+<script src="../static/js/jquery/jquery-3.6.0.min.js"></script>
+<script src="../static/js/axios/axios.min.js"></script>
+<script src="../static/js/index_api.js"></script>
+</html>
