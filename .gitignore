@@ -2,3 +2,5 @@
 /bert_model
 /.idea
 **/__pycache__/
+/opt_bert_model
+**.onnx

@@ -1,57 +1,63 @@
-version: '3'
+version: '3.7'
 services:
+
   binary_classifier:
+    image: backend-binary-classifier
     build: ./server
-    container_name: backend-binary-classifier
     restart: always
-    ports:
-      - "8081:5000"
     environment:
       - DEVICE=cpu
       - MODEL_NAME=/home/backend/bert_model
       - BACKEND_TYPE=binary_classifier
       - BATCH_SIZE=32
 
-
       - FLASK_APP=wsgi.py
       - FLASK_ENV=production
+
+      - VIRTUAL_HOST=whoami.local
     volumes:
       - ./bert_model:/home/backend/bert_model
     command: gunicorn --bind 0.0.0.0:5000 wsgi:app
     deploy:
-      resources:
-        reservations:
-          devices:
-            - capabilities: [gpu]
+      replicas: 2
+
+#
+#  lb_binary_classifier:
+#    image: jwilder/nginx-proxy
+#    ports:
+#      - "80:80"
+#      - "5000:5000"
+#      - "443:443"
+#    volumes:
+#      - /var/run/docker.sock:/tmp/docker.sock:ro
 
 
-  bart_summarizer:
-    build: ./server
-    container_name: backend-bart-summarizer
-    restart: always
-    ports:
-      - "8082:5000"
-    environment:
-      - DEVICE=cuda
-      - MODEL_NAME=/home/backend/bart_model
-      - BACKEND_TYPE=bart
+#
+#  bart_summarizer:
+#    build: ./server
+#    container_name: backend-bart-summarizer
+#    restart: always
+#    ports:
+#      - "8082:5000"
+#    environment:
+#      - DEVICE=cuda
+#      - MODEL_NAME=/home/backend/bart_model
+#      - BACKEND_TYPE=bart
+#
+#      - FLASK_APP=wsgi.py
+#      - FLASK_ENV=production
+#    volumes:
+#      - ./bart_model:/home/backend/bart_model
+#    command: gunicorn --bind 0.0.0.0:5000 wsgi:app
+#    deploy:
+#      resources:
+#        reservations:
+#          devices:
+#            - capabilities: [gpu]
 
-      - FLASK_APP=wsgi.py
-      - FLASK_ENV=production
-    volumes:
-      - ./bart_model:/home/backend/bart_model
-    command: gunicorn --bind 0.0.0.0:5000 wsgi:app
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - capabilities: [gpu]
-
-  flask:
-    build:
-      context: ./gui
-      dockerfile: Dockerfile
-    container_name: backend-gui
+  backend_gui:
+    build: ./gui
+    image: backend-gui
     environment:
       - FLASK_APP=wsgi.py
       - FLASK_ENV=production
@@ -62,7 +68,6 @@ services:
     ports:
       - "8080:5000"
     command: gunicorn --bind 0.0.0.0:5000 wsgi:app
-    depends_on:
-      - binary_classifier
-      - bart_summarizer
-
+#    depends_on:
+#      - lb_binary_classifier
+#      - bart_summarizer
