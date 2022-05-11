@@ -14,7 +14,7 @@ class Client(ABC):
     def __init__(self, host: str, port: str):
         self._host = host
         self._port = port
-        self._base_url = f"http://{self._host}:{self._port}"
+        self._base_url = f"{self._host}:{self._port}"
 
     @staticmethod
     def create(client_type: ClientType, host: str, port: str, **kwargs):
@@ -29,7 +29,7 @@ class BaseHttpClient(Client):
         super().__init__(host, port)
 
         self._method = kwargs.get("method", "generate")
-        self._url = f'{self._base_url}/{self._method}'
+        self._url = f'http://{self._base_url}/{self._method}'
 
     def _generate_http(self, request: GenerationRequest) -> Response:
         try:
@@ -92,7 +92,19 @@ class TritonClient(Client):
         raise NotImplemented()
 
     def process(self, request: GenerationRequest) -> Response:
-        if request is GenerationRequest:
+        if isinstance(request, GenerationRequest):
             return self._generate_triton(request)
-        elif request is SummarizationRequest:
+        elif isinstance(request, SummarizationRequest):
             return self._summarize_triton(request)
+
+
+if __name__ == "__main__":
+
+    client = Client.create(ClientType.TRITON, "127.0.0.1", "8000")
+    data_path = ""
+
+    with open(data_path, "r", encoding="UTF-8") as r:
+        text = r.read()
+
+    resp: Response = client.process(GenerationRequest(text))
+    print(resp.result)

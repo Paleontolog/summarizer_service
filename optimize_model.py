@@ -18,8 +18,8 @@ with open(data, "r", encoding="UTF-8") as r:
 
 device = 'cpu'
 model_name = "bert_model"
-export_model_path = r"./bert_model_onnx/bert/1/model.onnx"
-export_opt_model_path = r"bert_model_onnx/bert_opt/1/model.onnx"
+export_model_path = r"server_triton/bert/1/model.onnx"
+export_opt_model_path = r"server_triton/bert_opt/1/model.onnx"
 max_length = 128
 enable_overwrite = True
 opset_version = 11

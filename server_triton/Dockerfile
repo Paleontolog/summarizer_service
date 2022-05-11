@@ -13,4 +13,5 @@ RUN pip install --upgrade pip -r requirements.txt
 
 EXPOSE 8000 8001 8002
 
-ENTRYPOINT ["bash", "-c", "tritonserver --model-repository=./models", "bash"]
+ENTRYPOINT ["bash", "-c"]
+CMD ["tritonserver --model-repository=./models", "bash"]
