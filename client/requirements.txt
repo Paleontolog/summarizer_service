@@ -1,0 +1,5 @@
+dataclasses-json
+transformers
+nltk
+sentencepiece
+tritonclient[all]

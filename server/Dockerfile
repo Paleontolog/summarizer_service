@@ -5,6 +5,7 @@ WORKDIR /backend
 COPY . /backend
 
 RUN pip install --upgrade pip -r requirements.txt
+RUN python3 -m nltk.downloader punkt
 
 EXPOSE 5000
 

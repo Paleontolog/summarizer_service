@@ -1,15 +1,15 @@
-import json
 from dataclasses import dataclass
-from dataclasses_json import dataclass_json
+
+from dataclasses_json import dataclass_json, Undefined
 
 
-@dataclass_json
+@dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
 class GenerationRequest:
     input_text: str
 
 
-@dataclass_json
+@dataclass_json(undefined=Undefined.EXCLUDE)
 @dataclass
 class SummarizationRequest(GenerationRequest):
     max_length: int = 160
@@ -20,4 +20,9 @@ class SummarizationRequest(GenerationRequest):
     top_k: int = 5
     top_p: float = 0.8
 
+
+@dataclass_json(undefined=Undefined.EXCLUDE)
+@dataclass
+class Response:
+    result: str
 

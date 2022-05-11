@@ -10,6 +10,7 @@ COPY requirements.txt .
 ENV TOKENIZER ./models/tokenizer/pretrained
 
 RUN pip install --upgrade pip -r requirements.txt
+RUN python3 -m nltk.downloader punkt
 
 EXPOSE 8000 8001 8002
 

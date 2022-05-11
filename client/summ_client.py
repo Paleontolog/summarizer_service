@@ -1,4 +1,4 @@
-from abc import ABC
+from abc import ABC, abstractmethod
 from typing import Tuple, List
 
 import nltk
@@ -11,24 +11,34 @@ from request import GenerationRequest, Response, SummarizationRequest
 
 
 class Client(ABC):
-    def __init__(self, host: str, port: str):
-        self._host = host
-        self._port = port
-        self._base_url = f"{self._host}:{self._port}"
+    def __init__(self, base_url: str):
+        self._base_url = base_url
 
     @staticmethod
     def create(client_type: ClientType, host: str, port: str, **kwargs):
+        base_url = f"{host}:{port}"
+        return Client.create_from_url(client_type, base_url, **kwargs)
+
+    @staticmethod
+    def create_from_url(client_type: ClientType, base_url: str, **kwargs):
         if client_type == ClientType.BASE:
-            return BaseHttpClient(host, port)
+            return BaseHttpClient(base_url, **kwargs)
         elif client_type == ClientType.TRITON:
-            return TritonClient(host, port)
+            return TritonClient(base_url, **kwargs)
+        else:
+            raise Exception(f"Unexpected client type {client_type}")
+
+    @abstractmethod
+    def process(self, request: GenerationRequest):
+        """Process request"""
+        return
 
 
 class BaseHttpClient(Client):
-    def __init__(self, host: str, port: str, **kwargs):
-        super().__init__(host, port)
+    def __init__(self, base_url: str, **kwargs):
+        super().__init__(base_url)
 
-        self._method = kwargs.get("method", "generate")
+        self._method = kwargs.get("method", "api/generate")
         self._url = f'http://{self._base_url}/{self._method}'
 
     def _generate_http(self, request: GenerationRequest) -> Response:
@@ -41,14 +51,14 @@ class BaseHttpClient(Client):
         except Exception as e:
             raise Exception(f"Incorrect method call {self._url}", e)
 
-    def process(self, request: GenerationRequest):
+    def process(self, request: GenerationRequest) -> Response:
         return self._generate_http(request)
 
 
 class TritonClient(Client):
 
-    def __init__(self, host: str, port: str, **kwargs):
-        super().__init__(host, port)
+    def __init__(self, base_url: str, **kwargs):
+        super().__init__(base_url)
         self._triton_client = httpclient.InferenceServerClient(url=self._base_url)
         self._model_version = kwargs.get("model_version", "1")
         self._model_name = kwargs.get("model_name", "transformers")
@@ -99,7 +109,6 @@ class TritonClient(Client):
 
 
 if __name__ == "__main__":
-
     client = Client.create(ClientType.TRITON, "127.0.0.1", "8000")
     data_path = ""
 

@@ -4,9 +4,6 @@ from transformers import BertForSequenceClassification, BertTokenizer
 
 from app.request import GenerationRequest
 
-nltk.download('punkt')
-
-
 class BinaryClassifier:
     def __init__(self, **args):
         self._num_labels = 2

@@ -19,3 +19,10 @@ class SummarizationRequest(GenerationRequest):
     temperature: float = 0.8
     top_k: int = 5
     top_p: float = 0.8
+
+
+@dataclass_json(undefined=Undefined.EXCLUDE)
+@dataclass
+class Response:
+    result: str
+
