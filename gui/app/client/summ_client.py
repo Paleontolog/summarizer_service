@@ -23,13 +23,13 @@ class Client(ABC):
     @staticmethod
     def create_from_url(client_type: ClientType, base_url: str, **kwargs):
         if client_type == ClientType.BASE:
-            logging.debug("Create base http client")
+            logging.debug("Create base http summarizer_client")
             return BaseHttpClient(base_url, **kwargs)
         elif client_type == ClientType.TRITON:
-            logging.debug("Create triton client")
+            logging.debug("Create triton summarizer_client")
             return TritonClient(base_url, **kwargs)
         else:
-            raise Exception(f"Unexpected client type {client_type}")
+            raise Exception(f"Unexpected summarizer_client type {client_type}")
 
 
 class BaseHttpClient(Client):

@@ -6,9 +6,10 @@ services:
 #    build: ./server
 #    restart: always
 #    environment:
-#      - DEVICE=cpu
+#      - DEVICE=cuda
 #      - MODEL_NAME=/home/backend/bert_model
 #      - BACKEND_TYPE=binary_classifier
+#
 #      - BATCH_SIZE=32
 #
 #      - FLASK_APP=wsgi.py
@@ -16,6 +17,8 @@ services:
 #    volumes:
 #      - ./bert_model:/home/backend/bert_model
 #    command: gunicorn --bind 0.0.0.0:5000 wsgi:app
+#    ports:
+#      - "8081:5000"
 #    deploy:
 #      resources:
 #        reservations:
@@ -23,6 +26,17 @@ services:
 #            - driver: nvidia
 #              count: 1
 #              capabilities: [ gpu ]
+
+
+#  nginx_binary_classifier:
+#    build:
+#      context: .
+#      dockerfile: docker/nginx/Dockerfile
+#    depends_on:
+#      - binary_classifier
+#    ports:
+#      - "5000:5000"
+#    restart: always
 
   binary_classifier_triton:
     image: backend-binary-classifier_triton
@@ -41,41 +55,52 @@ services:
               capabilities: [ gpu ]
 
 
-  bart_summarizer:
-    build: ./server
-    container_name: backend-bart-summarizer
-    restart: always
-    ports:
-      - "8082:5000"
-    environment:
-      - DEVICE=cuda
-      - MODEL_NAME=/home/backend/bart_model
-      - BACKEND_TYPE=bart
-
-      - FLASK_APP=wsgi.py
-      - FLASK_ENV=production
-    volumes:
-      - ./bart_model:/home/backend/bart_model
-    command: gunicorn --bind 0.0.0.0:5000 wsgi:app
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: 1
-              capabilities: [ gpu ]
-
-
-  backend_gui:
-    build: ./gui
-    image: backend-gui
-    environment:
-      - FLASK_APP=wsgi.py
-      - FLASK_ENV=production
-
-      - BINARY_CLASSIFIER=binary_classifier_triton:8000
-      - BINARY_CLASSIFIER_TYPE=TRITON
-      - SUMMARIZER=bart_summarizer:5000
-    restart: always
-    ports:
-      - "8080:5000"
+#  bart_summarizer:
+#    build: ./server
+#    container_name: backend-bart-summarizer
+#    restart: always
+#    environment:
+#      - DEVICE=cpu
+#      - MODEL_NAME=/home/backend/bart_model
+#      - BACKEND_TYPE=bart
+#
+#      - FLASK_APP=wsgi.py
+#      - FLASK_ENV=production
+#    volumes:
+#      - ./bart_model:/home/backend/bart_model
+#    command: gunicorn --bind 0.0.0.0:5000 wsgi:app
+#    ports:
+#      - "8081:5000"
+#    deploy:
+#      resources:
+#        reservations:
+#          devices:
+#            - driver: nvidia
+#              count: 1
+#              capabilities: [ gpu ]
+#
+#
+#  nginx_bart_summarizer:
+#    build:
+#      context: .
+#      dockerfile: docker/nginx/Dockerfile
+#    depends_on:
+#      - bart_summarizer
+#    ports:
+#      - "5001:5001"
+#    restart: always
+#
+#
+#  backend_gui:
+#    build: ./gui
+#    image: backend-gui
+#    environment:
+#      - FLASK_APP=wsgi.py
+#      - FLASK_ENV=production
+#
+#      - BINARY_CLASSIFIER=http://binary_classifier
+#      - BINARY_CLASSIFIER_TYPE=BASE
+#      - SUMMARIZER=http://bart_summarizer
+#    restart: always
+#    ports:
+#      - "8080:5000"
