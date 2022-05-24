@@ -4,3 +4,5 @@
 **/__pycache__/
 /opt_bert_model
 **.onnx
+/BART_ONNX_EXPORT
+optimize_bart.py

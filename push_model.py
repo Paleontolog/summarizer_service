@@ -1,5 +1,5 @@
 from huggingface_hub import login
-from transformers import BertForSequenceClassification, BertTokenizerFast, MBartTokenizer, MBartForConditionalGeneration
+from transformers import BertForSequenceClassification, BertTokenizerFast, MBartTokenizer, MBartTokenizerFast, MBartForConditionalGeneration
 
 access_token = ""
 name = ""
